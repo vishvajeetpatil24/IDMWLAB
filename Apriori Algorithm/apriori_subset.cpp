@@ -2,7 +2,6 @@
 //Note -- This program can be made to be more efficient than it is currently now both in time and memory ......... :)
 #include <bits/stdc++.h>
 using namespace std;
-typedef vector<string> vstr;
 typedef vector<int> vec;
 typedef vector<vec> transaction;
 typedef set<int> itemset;
@@ -13,17 +12,7 @@ typedef map<itemset,itemset> rmap;
 typedef rmap::iterator rit;
 typedef imap::iterator mit;
 typedef itemset::iterator sit;
-void setprint(itemset S,vstr lis)
-{
-	sit x;
-	cout <<"{";
-	for (x=S.begin();x!=S.end();x++)
-	{
-		cout <<lis[*x]<<",";
-	}
-	cout <<"}";
-}
-void dsetprint(itemset S)
+void setprint(itemset S)
 {
 	sit x;
 	cout <<"{";
@@ -33,32 +22,73 @@ void dsetprint(itemset S)
 	}
 	cout <<"}";
 }
-void rmaprint(rmap R,vstr lis)
+void rmaprint(rmap R)
 {
 	rit x;
 	for (x=R.begin();x!=R.end();x++)
 	{
-		setprint(x->first,lis);
+		setprint(x->first);
 		cout <<" --> ";
-		dsetprint(R[x->first]);
+		setprint(R[x->first]);
 	}
 	cout <<"\n";
 }
-void imaprint(imap I,vstr lis)
+void imaprint(imap I)
 {
 	mit x;
 	//cout <<"-----------------------------------------\n";
 	for (x=I.begin();x!=I.end();x++)
 	{
-		setprint(x->first,lis);
+		setprint(x->first);
 		cout <<" --> ";
 		cout <<I[x->first];
 		cout <<"\n";
 	}
 }
-void apriori(imap current,rmap perma,double minsup,double minconf,int Tsize,superset L,vstr lis)
+int main()
 {
-	int numsup = (round)((double)Tsize*minsup);
+	//Input for transaction DB T. I am assuming the data is already given in sorted format
+	transaction T;
+	ifstream fp;
+	fp.open("chess.dat",ifstream::in);
+	string line;
+	rmap perma;
+	imap current;
+	superset L;
+	while(getline(fp,line))
+	{
+		T.push_back(vec());
+		stringstream sin;
+		sin << line;
+		int num;
+		while(sin >>num)
+		{
+			T[T.size()-1].push_back(num);
+			itemset i;
+			i.insert(num);
+			if (perma.find(i)==perma.end())
+			{
+				perma[i] = itemset();
+				perma[i].insert(T.size()-1);
+			}
+			else
+			{
+				perma[i].insert(T.size()-1);
+			}
+			if (current.find(i)==current.end())
+			{
+				current[i] = 1;
+			}
+			else
+			{
+				current[i]++;
+			}
+		}
+	}
+	//Input minsup and minconf
+	double minsup,minconf;
+	cin >> minsup >> minconf;
+	int numsup = (round)((double)T.size()*minsup);
 	mit it,it1;
 	sit its;
 	for (it=current.begin();it!=current.end();)
@@ -75,7 +105,7 @@ void apriori(imap current,rmap perma,double minsup,double minconf,int Tsize,supe
 	}
 	L.push_back(current);
 	cout <<".........................Frequent Itemsets..........................\n";
-	imaprint(current,lis);
+	imaprint(current);
 	//rmaprint(perma);
 	//For other levels automated procedure
 	int level = 2;
@@ -109,7 +139,7 @@ void apriori(imap current,rmap perma,double minsup,double minconf,int Tsize,supe
 		current = ncurrent;
 		perma = nperma;
 		L.push_back(ncurrent);
-		imaprint(ncurrent,lis);
+		imaprint(ncurrent);
 		//rmaprint(nperma);
 	}
 	//Rules Generation -----------
@@ -154,95 +184,10 @@ void apriori(imap current,rmap perma,double minsup,double minconf,int Tsize,supe
 					{
 						itemset i1;
 						set_difference((it->first).begin(),(it->first).end(),final.begin(),final.end(),inserter(i1,i1.end()));
-						setprint(final,lis);cout <<"-->";setprint(i1,lis);cout<<"  C:"<<(double)(L[n-1][it->first])/L[k-1][final]<<"\n";
+						setprint(final);cout <<"-->";setprint(i1);cout<<"  C:"<<(double)(L[n-1][it->first])/L[k-1][final]<<"\n";
 					}
 				}
 			}
-		}
-	}
-}
-int main()
-{
-	//Input for transaction DB T. I am assuming the data is already given in sorted format
-	transaction T;
-	ifstream fp;
-	fp.open("FILE1.txt",ifstream::in);
-	string line,temp;
-	rmap perma;
-	imap current;
-	superset L;
-	int tn,cnt1 = 0;
-	fp >> tn;
-	vstr lis;
-	lis.resize(tn+1);
-	getline(fp,line);
-	getline(fp,line);
-    string delimiter = ", ";
-	size_t pos = 0;
-	string token;
-	while ((pos = line.find(delimiter)) != string::npos) 
-	{
-    	token = line.substr(0, pos);
-    	lis[cnt1++] = token;
-    	line.erase(0, pos + delimiter.length());
-	}
-	lis[cnt1++] = line;
-	while(getline(fp,line))
-	{
-		stringstream sin;
-		T.push_back(vec());
-		sin << line;
-		int num;
-		char ch;
-		int count = 0;
-		while(sin >>num)
-		{
-			sin >> ch;
-			if (num==1)
-			{
-				num = count;
-				count++;
-			}
-			else
-			{
-				count++;
-				continue;
-			}
-			T[T.size()-1].push_back(num);
-			itemset i;
-			i.insert(num);
-			if (perma.find(i)==perma.end())
-			{
-				perma[i] = itemset();
-				perma[i].insert(T.size()-1);
-			}
-			else
-			{
-				perma[i].insert(T.size()-1);
-			}
-			if (current.find(i)==current.end())
-			{
-				current[i] = 1;
-			}
-			else
-			{
-				current[i]++;
-			}
-		}
-	}
-	//Input minsup and minconf
-	double minsup,minconf;
-	minsup = 0.1;
-	//cin >> minsup >> minconf;
-	//rmaprint(perma,lis);
-	for (int j=0;j<8;j++,minsup+=0.1)
-	{
-		minconf = 0.1;
-		for (int k=0;k<6;k++,minconf+=0.1)
-		{
-			cout <<"Apriori Algorithm with minimum Support "<<minsup<<" and minimum Confidence "<<minconf<<"\n";
-			apriori(current,perma,minsup,minconf,T.size(),L,lis);
-			cout <<"\n";
 		}
 	}
 	return 0;

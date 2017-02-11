@@ -36,7 +36,7 @@ void rmaprint(rmap R)
 void imaprint(imap I)
 {
 	mit x;
-	cout <<"-----------------------------------------\n";
+	//cout <<"-----------------------------------------\n";
 	for (x=I.begin();x!=I.end();x++)
 	{
 		setprint(x->first);
@@ -104,6 +104,7 @@ int main()
 		}
 	}
 	L.push_back(current);
+	cout <<".........................Frequent Itemsets..........................\n";
 	imaprint(current);
 	//rmaprint(perma);
 	//For other levels automated procedure
@@ -142,6 +143,7 @@ int main()
 		//rmaprint(nperma);
 	}
 	//Rules Generation -----------
+	cout <<".........................Generated Rules..........................\n";
 	for (int j=1;j<L.size();j++)
 	{
 		for (it=L[j].begin();it!=L[j].end();it++)
