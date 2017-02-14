@@ -173,7 +173,7 @@ int main()
 	}
 	L.push_back(perma);
 	//setprint(F1);
-	cout <<".............................................\n";
+	cout <<"...................Level 1 Frequent Itemset..................\n";
 	iimprint(perma);
 	for (int k = 2;perma.size()!=0;k++)
 	{
@@ -277,7 +277,7 @@ int main()
 				}
 			}
 		}
-		cout <<".............................................\n";
+		cout <<"...................Level "<<k<<" Frequent Itemset..................\n";
 		perma = nperma;
 		suit xl;
 		for (xl=combi.begin();xl!=combi.end();xl++)
@@ -295,6 +295,7 @@ int main()
 		L.push_back(perma);
 		iimprint(perma);
 	}
+	cout <<"..........................Generated Rules...........................\n";
 	iit it;
 	for (int j=1;j<L.size();j++)
 	{
